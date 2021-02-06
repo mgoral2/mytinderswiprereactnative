@@ -13,7 +13,9 @@ const windowHeight = Dimensions.get('window').height;
 const NopeImage = require('./images/nope.png');
 const LikeImage = require('./images/like.png');
 
-const {event, Value} = Animated;
+const {
+  event, Value, interpolate, concat, Extrapolate
+} = Animated;
 
 export default class App extends Component {
   constructor(props: ProfilesProps) {
@@ -37,11 +39,21 @@ export default class App extends Component {
 render() {
   const {onGestureEvent, translationX: translateX, translationY: translateY } = this;
 
+  const rotateZ = concat(
+    interpolate(translateX, {
+      inputRange: [-windowWidth/2, windowWidth/2],
+      outputRange: [15, -15],
+      extrapolate:  Extrapolate.CLAMP,
+    }),
+    "deg",
+  );
+
   const style = {
     //...StyleSheet.absoluteFillObject,
     transform: [
       { translateX },
       { translateY },
+      { rotateZ },
     ],
   };
 
