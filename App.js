@@ -2,6 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 
+import {PanGestureHandler } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
+
 import ProfilePic from './ProfilePic.js';
 
 const windowWidth = Dimensions.get('window').width;
@@ -10,10 +13,48 @@ const windowHeight = Dimensions.get('window').height;
 const NopeImage = require('./images/nope.png');
 const LikeImage = require('./images/like.png');
 
-export default function App() {
+const {event} = Animated;
+
+export default class App extends Component {
+  constructor(props: ProfilesProps) {
+    super(props);
+
+    this.translationX = new Value(0);
+    this.translationY = new Value(0);
+
+  this.onGestureEvent = event(
+    [
+      {
+        nativeEvent: {
+          translationX: this.translationX,
+          translationY: this.translationY,
+        },
+      },
+    ],
+    { useNativeDriver: true },
+  )
+}
+render() {
+  const {onGestureEvent, translationX: translateX, translationY: translateY } = this;
+  const style = {
+    ...StyleSheet.absoluteFillObject,
+    transform: [
+      { translateX },
+      { translateY },
+    ],
+  };
   return (
     <View style = {styles.Outter}>
-      <ProfilePic />
+
+      <panGestureHandler
+      onHandlerStateChange={onGestureEvent}
+      {...{onGestureEvent}}
+      >
+        <Animated.View>
+        <ProfilePic />
+        </Animated.View>
+      </panGestureHandler>
+
       <View style = {styles.Buttons}>
         <Image source={NopeImage}
         style = {styles.Nope}
@@ -24,6 +65,7 @@ export default function App() {
       </View>
     </View>
   );
+}
 }
 
 
