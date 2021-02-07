@@ -39,6 +39,7 @@ export default class App extends Component {
     ],
     { useNativeDriver: true },
   )
+  this.init();
 }
 
 init() {
