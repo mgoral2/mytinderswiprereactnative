@@ -9,6 +9,7 @@ import ProfilePic from './ProfilePic.js';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const rotatedWidth = windowWidth * Math.sin(75*Math.PI/180) + windowHeight*Math.sin(15*Math.PI/180);
 
 const NopeImage = require('./images/nope.png');
 const LikeImage = require('./images/like.png');
@@ -16,7 +17,7 @@ const LikeImage = require('./images/like.png');
 const {
   event, Value, interpolate, concat, Extrapolate, cond, eq, set,
   clockRunning, startClock, stopClock, spring, Clock, greaterThan, lessThan,
-  and,
+  and, add, multiply
 } = Animated;
 
 function runSpring(clock, value, dest) {
@@ -84,25 +85,26 @@ init() {
 
   const clockX = new Clock();
   const clockY = new Clock();
-  const snapPoint = cond(and(lessThan(translationX, 0), lessThan(velocityX, -10))
-  -windowWidth,
-  cond(
-    and(greaterThan(translationX, 0), greaterThan(velocityX, 10)),
-    windowWidth,
-    0,
 
-  )
-)
+  gestureState.setValue(State.UNDETERMINED);
+
+  const finalTranslateX = add(translationX, multiply(0.2, velocityX));
+    const translationThreshold = windowWidth / 4;
+    const snapPoint = cond(
+      lessThan(finalTranslateX, -translationThreshold),
+      -rotatedWidth,
+      cond(greaterThan(finalTranslateX, translationThreshold), rotatedWidth, 0),
+    );
 
   this.translateX = cond(eq(gestureState, State.END), [
-    set(translationX, runSpring(clockX, translationX, velocityX, snapPoint)),
+    set(translationX, runSpring(clockX, translationX, snapPoint)),
     translationX,
   ],
   translationX
 );
 
 this.translateY = cond(eq(gestureState, State.END), [
-  set(translationY, runSpring(clockY, translationY, 0, 0)),
+  set(translationY, runSpring(clockY, translationY, 0)),
   translationY,
 ],
 translationY
