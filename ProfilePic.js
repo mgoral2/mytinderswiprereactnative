@@ -1,5 +1,6 @@
 
-import * as React from "react";
+import * as React from "react"
+import {Component} from "react"
 import {Image, StyleSheet, View, Text, Dimensions} from "react-native";
 
 import Animated from "react-native-reanimated";
@@ -9,7 +10,17 @@ const windowHeight = Dimensions.get('window').height;
 
 var image1 = require('./images/1.jpg');
 
-export default function ProfilePic() {
+export default class ProfilePic extends Component {
+
+  static defaultProps = {
+    likeOpacity: 0,
+    nopeOpacity: 0,
+  }
+
+  render() {
+
+    const {likeOpacity, nopeOpacity } = this.props;
+
   return (
     <View >
     <View>
@@ -25,6 +36,7 @@ export default function ProfilePic() {
       position: 'absolute',
       top: windowHeight*.1,
       left: windowWidth*.1,
+      opacity: likeOpacity,
     }}
     >
     <Text style = {styles.likeLabel}>Like</Text>
@@ -34,6 +46,7 @@ export default function ProfilePic() {
       position: 'absolute',
       top: windowHeight*.1,
       right: windowWidth*.1,
+      opacity: nopeOpacity,
 
     }}
     >
@@ -41,7 +54,10 @@ export default function ProfilePic() {
     </Animated.View>
     </View>
   )
+}
 };
+
+
 
 const styles = StyleSheet.create({
   likeLabel: {
